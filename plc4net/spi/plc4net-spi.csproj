@@ -28,8 +28,4 @@
       <ProjectReference Include="..\api\plc4net-api.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Ayx.BitIO" Version="1.0.0" />
-    </ItemGroup>
-
 </Project>

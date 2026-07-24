@@ -19,11 +19,10 @@
 
 using System;
 using System.Text;
-using Ayx.BitIO;
 
 namespace org.apache.plc4net.spi.generation
 {
-    
+
     public class ReadBuffer
     {
         private readonly byte[] _data;
@@ -49,15 +48,17 @@ namespace org.apache.plc4net.spi.generation
         {
             return _data;
         }
-    
-        public int GetTotalBytes() 
+
+        public int GetTotalBytes()
         {
             return _data.Length;
         }
 
         public bool HasMore(int bitLength)
         {
-            return bitLength < _reader.Remain;
+            // Inclusive: a buffer with exactly bitLength bits left can still serve
+            // a read of that size.
+            return bitLength <= _reader.Remaining;
         }
 
         public byte PeekByte(int offset)
@@ -72,109 +73,100 @@ namespace org.apache.plc4net.spi.generation
 
         public byte ReadByte(String logicalName, int bitLength)
         {
-            if ((bitLength < 0) || (bitLength > 8)) 
+            if ((bitLength < 0) || (bitLength > 8))
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(bitLength));
             }
-            return (byte) _reader.ReadInt(bitLength);
+            return (byte) _reader.ReadBits(bitLength);
         }
-        
+
         public ushort ReadUshort(String logicalName, int bitLength)
         {
-            if ((bitLength < 0) || (bitLength > 16)) 
+            if ((bitLength < 0) || (bitLength > 16))
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(bitLength));
             }
-            return (ushort) _reader.ReadInt(bitLength);
+            return (ushort) _reader.ReadBits(bitLength);
         }
 
         public uint ReadUint(String logicalName, int bitLength)
         {
-            if ((bitLength < 0) || (bitLength > 32)) 
+            if ((bitLength < 0) || (bitLength > 32))
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(bitLength));
             }
-            return (uint) _reader.ReadInt(bitLength);
+            return (uint) _reader.ReadBits(bitLength);
         }
 
         public ulong ReadUlong(String logicalName, int bitLength)
         {
-            if ((bitLength < 0) || (bitLength > 64)) 
+            if ((bitLength < 0) || (bitLength > 64))
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(bitLength));
             }
-
-            ulong firstInt = 0;
-            if (bitLength > 32)
-            {
-                firstInt = (ulong) _reader.ReadInt(bitLength - 32) << 32;
-            }
-            return firstInt | (ulong) _reader.ReadInt(bitLength);
+            // The previous implementation read (bitLength - 32) bits and then a
+            // further bitLength bits, consuming 2*bitLength-32 bits instead of
+            // bitLength, so it never round-tripped against WriteBuffer.WriteUlong.
+            return _reader.ReadBits(bitLength);
         }
 
         public sbyte ReadSbyte(String logicalName, int bitLength)
         {
-            if ((bitLength < 0) || (bitLength > 8)) 
+            if ((bitLength < 0) || (bitLength > 8))
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(bitLength));
             }
-            return (sbyte) _reader.ReadInt(bitLength);
+            return (sbyte) _reader.ReadSignedBits(bitLength);
         }
-        
+
         public short ReadShort(String logicalName, int bitLength)
         {
-            if ((bitLength < 0) || (bitLength > 16)) 
+            if ((bitLength < 0) || (bitLength > 16))
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(bitLength));
             }
-            return (short) _reader.ReadInt(bitLength);
+            return (short) _reader.ReadSignedBits(bitLength);
         }
 
         public int ReadInt(String logicalName, int bitLength)
         {
-            if ((bitLength < 0) || (bitLength > 32)) 
+            if ((bitLength < 0) || (bitLength > 32))
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(bitLength));
             }
-            return _reader.ReadInt(bitLength);
+            return (int) _reader.ReadSignedBits(bitLength);
         }
 
         public long ReadLong(String logicalName, int bitLength)
         {
-            if ((bitLength < 0) || (bitLength > 64)) 
+            if ((bitLength < 0) || (bitLength > 64))
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(bitLength));
             }
-
-            long firstInt = 0;
-            if (bitLength > 32)
-            {
-                firstInt = (long) _reader.ReadInt(bitLength - 32) << 32;
-            }
-            return firstInt | (long) _reader.ReadInt(bitLength);
+            // Same over-read as ReadUlong had.
+            return _reader.ReadSignedBits(bitLength);
         }
 
         public float ReadFloat(String logicalName, int bitLength)
         {
             if (bitLength == 32)
             {
-                return BitConverter.ToSingle(BitConverter.GetBytes(ReadInt(logicalName, 32)), 0);
+                // Reinterpret the 32 raw bits as IEEE-754. Going via
+                // BitConverter.GetBytes would reorder them on a little-endian host.
+                return BitConverter.Int32BitsToSingle((int) _reader.ReadBits(32));
             }
-            // This is the format as described in the KNX spec ... it's not a real half precision floating point.
+            // KNX DPT 9.x: a 16 bit fixed-point form, not IEEE-754 half precision.
             if (bitLength == 16)
             {
-                bool sign = true;
-                sign = _reader.ReadBool();
-
-                var exp = _reader.ReadInt(4);
-                var mantissa = _reader.ReadInt(11);
-                // In the mantissa notation actually the first bit is omitted, we need to add it back
-                var f = 0.01 * mantissa * Math.Pow(2, exp);
+                var sign = _reader.ReadBool();
+                var exp = (int) _reader.ReadBits(4);
+                var mantissa = (int) _reader.ReadBits(11);
                 if (sign)
                 {
-                    return (float) f * -1;
+                    // Negative values are stored as a two's complement mantissa.
+                    mantissa -= 2048;
                 }
-                return (float) f;
+                return (float) (0.01 * mantissa * Math.Pow(2, exp));
             }
             throw new NotImplementedException("This encoding is currently not supported");
         }
@@ -183,24 +175,42 @@ namespace org.apache.plc4net.spi.generation
         {
             if (bitLength == 32)
             {
-                return BitConverter.ToDouble(BitConverter.GetBytes(ReadInt(logicalName, 32)), 0);
+                // Was BitConverter.ToDouble over a 4 byte array, which always threw.
+                return ReadFloat(logicalName, 32);
             }
             if (bitLength == 64)
             {
-                return BitConverter.ToDouble(BitConverter.GetBytes(ReadLong(logicalName, 64)), 0);
+                return BitConverter.Int64BitsToDouble((long) _reader.ReadBits(64));
             }
             throw new NotImplementedException("This encoding is currently not supported");
         }
 
         public string ReadString(String logicalName, int bitLength, Encoding encoding)
         {
-            throw new NotImplementedException("This encoding is currently not supported");
+            if (encoding == null)
+            {
+                throw new ArgumentNullException(nameof(encoding));
+            }
+            if (bitLength < 0 || bitLength % 8 != 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(bitLength), bitLength, "String lengths must be a whole number of bytes.");
+            }
+
+            var raw = _reader.ReadBytes(bitLength / 8);
+            // PLC strings are commonly padded to a fixed field width with NULs.
+            return encoding.GetString(raw).TrimEnd('\0');
         }
 
         public byte[] ReadByteArray(String logicalName, int bitLength)
         {
-            throw new NotImplementedException("This function is currently not supported");
+            if (bitLength < 0 || bitLength % 8 != 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(bitLength), bitLength, "Byte arrays must be a whole number of bytes.");
+            }
+            return _reader.ReadBytes(bitLength / 8);
         }
-        
+
     }
 }
