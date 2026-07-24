@@ -20,16 +20,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net452</TargetFramework>
-        <RootNamespace>org.apache.plc4net</RootNamespace>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Authors>Apache PLC4X</Authors>
-        <Copyright>The Apache Software Foundation</Copyright>
-        <PackageProjectUrl>https://plc4x.apache.org</PackageProjectUrl>
-        <PackageVersion>0.8.0-SNAPSHOT</PackageVersion>
         <Title>PLC4Net: SPI</Title>
-        <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
-        <LangVersion>11.0</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>

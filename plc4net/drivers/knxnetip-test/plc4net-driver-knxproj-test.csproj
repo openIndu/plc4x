@@ -20,21 +20,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net452</TargetFramework>
-    <RootNamespace>org.apache.plc4net</RootNamespace>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Apache PLC4X</Authors>
-    <Copyright>The Apache Software Foundation</Copyright>
-    <PackageProjectUrl>https://plc4x.apache.org</PackageProjectUrl>
     <Title>PLC4Net: Driver: KNXNet/IP: Test</Title>
-    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
-    <PackageVersion>0.8.0-SNAPSHOT</PackageVersion>
-    <LangVersion>11.0</LangVersion>
+    <!-- A test assembly is not a shippable artifact. -->
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+    <!--
+      Microsoft.NET.Test.Sdk is what makes `dotnet test` discover and run the
+      xunit tests; without it the suite compiles but never executes.
+    -->
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
