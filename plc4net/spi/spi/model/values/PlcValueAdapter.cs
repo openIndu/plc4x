@@ -1,4 +1,4 @@
-//
+﻿//
 // Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -25,37 +25,37 @@ namespace org.apache.plc4net.spi.model.values
 {
     public abstract class PlcValueAdapter : IPlcValue
     {
-        public bool IsSimple()
+        public virtual bool IsSimple()
         {
             return false;
         }
 
-        public bool IsNullable()
+        public virtual bool IsNullable()
         {
             return false;
         }
 
-        public bool IsNull()
+        public virtual bool IsNull()
         {
             return false;
         }
 
-        public bool IsBool()
+        public virtual bool IsBool()
         {
             return false;
         }
 
-        public int GetBoolLength()
+        public virtual int GetBoolLength()
         {
             return 1;
         }
 
-        public bool GetBool()
+        public virtual bool GetBool()
         {
             return default;
         }
 
-        public bool GetBoolAt(int index)
+        public virtual bool GetBoolAt(int index)
         {
             if (index == 0)
             {
@@ -64,177 +64,177 @@ namespace org.apache.plc4net.spi.model.values
             return default;
         }
 
-        public bool[] GetBoolArray()
+        public virtual bool[] GetBoolArray()
         {
             return default;
         }
 
-        public bool IsByte()
+        public virtual bool IsByte()
         {
             return false;
         }
 
-        public byte GetByte()
+        public virtual byte GetByte()
         {
             return default;
         }
 
-        public bool IsUshort()
+        public virtual bool IsUshort()
         {
             return false;
         }
 
-        public ushort GetUshort()
+        public virtual ushort GetUshort()
         {
             return default;
         }
 
-        public bool IsUint()
+        public virtual bool IsUint()
         {
             return false;
         }
 
-        public uint GetUint()
+        public virtual uint GetUint()
         {
             return default;
         }
 
-        public bool IsUlong()
+        public virtual bool IsUlong()
         {
             return false;
         }
 
-        public ulong GetUlong()
+        public virtual ulong GetUlong()
         {
             return default;
         }
 
-        public bool IsSbyte()
+        public virtual bool IsSbyte()
         {
             return false;
         }
 
-        public sbyte GetSbyte()
+        public virtual sbyte GetSbyte()
         {
             return default;
         }
 
-        public bool IsShort()
+        public virtual bool IsShort()
         {
             return false;
         }
 
-        public short GetShort()
+        public virtual short GetShort()
         {
             return default;
         }
 
-        public bool IsInt()
+        public virtual bool IsInt()
         {
             return false;
         }
 
-        public int GetInt()
+        public virtual int GetInt()
         {
             return default;
         }
 
-        public bool IsLong()
+        public virtual bool IsLong()
         {
             return false;
         }
 
-        public long GetLong()
+        public virtual long GetLong()
         {
             return default;
         }
 
-        public bool IsFloat()
+        public virtual bool IsFloat()
         {
             return false;
         }
 
-        public float GetFloat()
+        public virtual float GetFloat()
         {
             return default;
         }
 
-        public bool IsDouble()
+        public virtual bool IsDouble()
         {
             return false;
         }
 
-        public double GetDouble()
+        public virtual double GetDouble()
         {
             return default;
         }
 
-        public bool IsString()
+        public virtual bool IsString()
         {
             return false;
         }
 
-        public string GetString()
+        public virtual string GetString()
         {
             return default;
         }
 
-        public bool IsDateTime()
+        public virtual bool IsDateTime()
         {
             return false;
         }
 
-        public DateTime GetDateTime()
+        public virtual DateTime GetDateTime()
         {
             return default;
         }
 
-        public byte[] GetRaw()
+        public virtual byte[] GetRaw()
         {
             return default;
         }
 
-        public bool IsList()
+        public virtual bool IsList()
         {
             return false;
         }
 
-        public int GetLength()
+        public virtual int GetLength()
         {
             return 1;
         }
 
-        public IPlcValue GetIndex(int index)
+        public virtual IPlcValue GetIndex(int index)
         {
             return default;
         }
 
-        public List<IPlcValue> GetList()
+        public virtual List<IPlcValue> GetList()
         {
             return default;
         }
 
-        public bool IsStruct()
+        public virtual bool IsStruct()
         {
             return false;
         }
 
-        public string[] GetKeys()
+        public virtual string[] GetKeys()
         {
             return default;
         }
 
-        public bool HasKey(string key)
+        public virtual bool HasKey(string key)
         {
             return false;
         }
 
-        public IPlcValue GetValue(string key)
+        public virtual IPlcValue GetValue(string key)
         {
             return default;
         }
 
-        public Dictionary<string, IPlcValue> GetStruct()
+        public virtual Dictionary<string, IPlcValue> GetStruct()
         {
             return default;
         }

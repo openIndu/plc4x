@@ -1,4 +1,4 @@
-//
+﻿//
 // Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -30,12 +30,12 @@ namespace org.apache.plc4net.spi.model.values
             this.value = value;
         }
 
-        public new int GetBoolLength()
+        public override int GetBoolLength()
         {
             return 8;
         }
 
-        public new bool GetBoolAt(int index)
+        public override bool GetBoolAt(int index)
         {
             if (index > 7)
             {
@@ -45,7 +45,7 @@ namespace org.apache.plc4net.spi.model.values
             return ((value >> index) & 1) == 1;
         }
 
-        public new bool[] GetBoolArray()
+        public override bool[] GetBoolArray()
         {
             return new[]
             {

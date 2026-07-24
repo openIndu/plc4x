@@ -18,176 +18,211 @@
 //
 
 using System;
+using System.Globalization;
 
 namespace org.apache.plc4net.spi.model.values
 {
     public abstract class SimpleNumericValueAdapter<T> : PlcSimpleValueAdapter where T : IComparable
     {
-        private IComparable value;
+        private readonly IComparable value;
 
-        public SimpleNumericValueAdapter(IComparable value)
+        protected SimpleNumericValueAdapter(IComparable value)
         {
             this.value = value;
         }
-        
-        public new bool IsBool()
+
+        /// <summary>
+        /// The boxed value, widened to decimal for range checks.
+        /// </summary>
+        /// <remarks>
+        /// Range checks cannot go through <see cref="IComparable.CompareTo"/>: comparing a
+        /// boxed Int32 against a UInt64 bound throws ArgumentException, because CompareTo
+        /// requires both operands to be the same runtime type. Widening to a common type
+        /// first is what makes the comparison well defined.
+        ///
+        /// decimal covers every integral PLC type exactly, including ulong.MaxValue. It
+        /// cannot hold the outer range of float/double, so an out-of-range REAL/LREAL
+        /// reports false rather than throwing.
+        /// </remarks>
+        private bool TryAsDecimal(out decimal result)
+        {
+            try
+            {
+                result = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+                return true;
+            }
+            catch (OverflowException)
+            {
+                result = default;
+                return false;
+            }
+            catch (InvalidCastException)
+            {
+                result = default;
+                return false;
+            }
+        }
+
+        private bool InRange(decimal min, decimal max)
+        {
+            return TryAsDecimal(out var d) && d >= min && d <= max;
+        }
+
+        public override bool IsBool()
         {
             return true;
         }
-        
-        public new bool GetBool()
+
+        public override bool GetBool()
         {
-            return value.CompareTo(0) != 0;
-        }
-        
-        public new bool IsByte()
-        {
-            return (value.CompareTo(byte.MinValue) >= 0) && (value.CompareTo(byte.MaxValue) <= 0);
+            return TryAsDecimal(out var d) ? d != 0m : false;
         }
 
-        public new byte GetByte()
+        public override bool IsByte()
+        {
+            return InRange(byte.MinValue, byte.MaxValue);
+        }
+
+        public override byte GetByte()
         {
             if (!IsByte())
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(value));
             }
-            return (byte) value;
+            return Convert.ToByte(value, CultureInfo.InvariantCulture);
         }
 
-        public new bool IsUshort()
+        public override bool IsUshort()
         {
-            return (value.CompareTo(ushort.MinValue) >= 0) && (value.CompareTo(ushort.MaxValue) <= 0);
+            return InRange(ushort.MinValue, ushort.MaxValue);
         }
 
-        public new ushort GetUshort()
+        public override ushort GetUshort()
         {
             if (!IsUshort())
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(value));
             }
-            return (ushort) value;
+            return Convert.ToUInt16(value, CultureInfo.InvariantCulture);
         }
 
-        public new bool IsUint()
+        public override bool IsUint()
         {
-            return (value.CompareTo(uint.MinValue) >= 0) && (value.CompareTo(uint.MaxValue) <= 0);
+            return InRange(uint.MinValue, uint.MaxValue);
         }
 
-        public new uint GetUint()
+        public override uint GetUint()
         {
             if (!IsUint())
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(value));
             }
-            return (uint) value;
+            return Convert.ToUInt32(value, CultureInfo.InvariantCulture);
         }
 
-        public new bool IsUlong()
+        public override bool IsUlong()
         {
-            return (value.CompareTo(ulong.MinValue) >= 0) && (value.CompareTo(ulong.MaxValue) <= 0);
+            return InRange(ulong.MinValue, ulong.MaxValue);
         }
 
-        public new ulong GetUlong()
+        public override ulong GetUlong()
         {
             if (!IsUlong())
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(value));
             }
-            return (ulong) value;
+            return Convert.ToUInt64(value, CultureInfo.InvariantCulture);
         }
 
-        public new bool IsSbyte()
+        public override bool IsSbyte()
         {
-            return (value.CompareTo(sbyte.MinValue) >= 0) && (value.CompareTo(sbyte.MaxValue) <= 0);
+            return InRange(sbyte.MinValue, sbyte.MaxValue);
         }
 
-        public new sbyte GetSbyte()
+        public override sbyte GetSbyte()
         {
             if (!IsSbyte())
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(value));
             }
-            return (sbyte) value;
+            return Convert.ToSByte(value, CultureInfo.InvariantCulture);
         }
 
-        public new bool IsShort()
+        public override bool IsShort()
         {
-            return (value.CompareTo(short.MinValue) >= 0) && (value.CompareTo(short.MaxValue) <= 0);
+            return InRange(short.MinValue, short.MaxValue);
         }
 
-        public new short GetShort()
+        public override short GetShort()
         {
             if (!IsShort())
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(value));
             }
-            return (short) value;
+            return Convert.ToInt16(value, CultureInfo.InvariantCulture);
         }
 
-        public new bool IsInt()
+        public override bool IsInt()
         {
-            return (value.CompareTo(int.MinValue) >= 0) && (value.CompareTo(int.MaxValue) <= 0);
+            return InRange(int.MinValue, int.MaxValue);
         }
 
-        public new int GetInt()
+        public override int GetInt()
         {
             if (!IsInt())
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(value));
             }
-            return (int) value;
+            return Convert.ToInt32(value, CultureInfo.InvariantCulture);
         }
 
-        public new bool IsLong()
+        public override bool IsLong()
         {
-            return (value.CompareTo(long.MinValue) >= 0) && (value.CompareTo(long.MaxValue) <= 0);
+            return InRange(long.MinValue, long.MaxValue);
         }
 
-        public new long GetLong()
+        public override long GetLong()
         {
             if (!IsLong())
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(value));
             }
-            return (long) value;
+            return Convert.ToInt64(value, CultureInfo.InvariantCulture);
         }
 
-        public new bool IsFloat()
+        public override bool IsFloat()
         {
-            return (value.CompareTo(-float.MaxValue) >= 0) && (value.CompareTo(float.MaxValue) <= 0);
+            var d = Convert.ToDouble(value, CultureInfo.InvariantCulture);
+            return d >= -float.MaxValue && d <= float.MaxValue;
         }
 
-        public new float GetFloat()
+        public override float GetFloat()
         {
             if (!IsFloat())
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(value));
             }
-            return (float) value;
+            return Convert.ToSingle(value, CultureInfo.InvariantCulture);
         }
 
-        public new bool IsDouble()
-        {
-            return (value.CompareTo(-double.MaxValue) >= 0) && (value.CompareTo(double.MaxValue) <= 0);
-        }
-
-        public new double GetDouble()
-        {
-            if (!IsDouble())
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            return (double) value;
-        }
-
-        public new bool IsString()
+        public override bool IsDouble()
         {
             return true;
         }
 
-        public new String GetString()
+        public override double GetDouble()
         {
-            return value.ToString();
+            return Convert.ToDouble(value, CultureInfo.InvariantCulture);
+        }
+
+        public override bool IsString()
+        {
+            return true;
+        }
+
+        public override string GetString()
+        {
+            return Convert.ToString(value, CultureInfo.InvariantCulture);
         }
 
         protected bool Equals(SimpleNumericValueAdapter<T> other)
@@ -207,6 +242,6 @@ namespace org.apache.plc4net.spi.model.values
         {
             return (value != null ? value.GetHashCode() : 0);
         }
-        
+
     }
 }

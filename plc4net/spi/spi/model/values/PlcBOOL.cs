@@ -30,6 +30,31 @@ namespace org.apache.plc4net.spi.model.values
             this.value = value;
         }
 
+        public override bool IsBool()
+        {
+            return true;
+        }
+
+        public override bool GetBool()
+        {
+            return value;
+        }
+
+        public override bool[] GetBoolArray()
+        {
+            return new[] { value };
+        }
+
+        public override bool IsString()
+        {
+            return true;
+        }
+
+        public override string GetString()
+        {
+            return value.ToString();
+        }
+
         protected bool Equals(PlcBOOL other)
         {
             return value == other.value;

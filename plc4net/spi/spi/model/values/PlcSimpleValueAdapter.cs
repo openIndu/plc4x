@@ -22,12 +22,12 @@ namespace org.apache.plc4net.spi.model.values
     public abstract class PlcSimpleValueAdapter : PlcValueAdapter
     {
        
-        public  bool IsSimple()
+        public override bool IsSimple()
         {
             return true;
         }
 
-        public int GetLength()
+        public override int GetLength()
         {
             return 1;
         }
