@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "plc4net-driver-knxproj-test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "plc4net-spi-test", "spi-test\plc4net-spi-test.csproj", "{E5614E81-B60E-4FDB-A0BF-9E38902E8821}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "plc4net-transport-tcp", "transports\tcp\plc4net-transport-tcp.csproj", "{71317C12-AB3B-42EE-9BFE-EF8217232F6B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,18 @@ Global
 		{E5614E81-B60E-4FDB-A0BF-9E38902E8821}.Release|x64.Build.0 = Release|Any CPU
 		{E5614E81-B60E-4FDB-A0BF-9E38902E8821}.Release|x86.ActiveCfg = Release|Any CPU
 		{E5614E81-B60E-4FDB-A0BF-9E38902E8821}.Release|x86.Build.0 = Release|Any CPU
+		{71317C12-AB3B-42EE-9BFE-EF8217232F6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71317C12-AB3B-42EE-9BFE-EF8217232F6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71317C12-AB3B-42EE-9BFE-EF8217232F6B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{71317C12-AB3B-42EE-9BFE-EF8217232F6B}.Debug|x64.Build.0 = Debug|Any CPU
+		{71317C12-AB3B-42EE-9BFE-EF8217232F6B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{71317C12-AB3B-42EE-9BFE-EF8217232F6B}.Debug|x86.Build.0 = Debug|Any CPU
+		{71317C12-AB3B-42EE-9BFE-EF8217232F6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71317C12-AB3B-42EE-9BFE-EF8217232F6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71317C12-AB3B-42EE-9BFE-EF8217232F6B}.Release|x64.ActiveCfg = Release|Any CPU
+		{71317C12-AB3B-42EE-9BFE-EF8217232F6B}.Release|x64.Build.0 = Release|Any CPU
+		{71317C12-AB3B-42EE-9BFE-EF8217232F6B}.Release|x86.ActiveCfg = Release|Any CPU
+		{71317C12-AB3B-42EE-9BFE-EF8217232F6B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
