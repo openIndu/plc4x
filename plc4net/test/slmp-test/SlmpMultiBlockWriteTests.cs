@@ -177,22 +177,26 @@ namespace org.apache.plc4net.test.slmp
         }
 
         [Fact]
-        public async Task Seventeen_bits_span_two_little_endian_words()
+        public async Task Non_word_aligned_bit_ranges_keep_using_batch_write()
         {
             using var transport = NewTransport();
             using var connection = NewConnection(transport);
-            transport.InjectTestData(Response(0));
+            var frames = Task.Run(() => CaptureFrames(transport, 30, 22));
             var bits = new bool[17];
             bits[0] = bits[8] = bits[16] = true;
             var request = connection.WriteRequestBuilder!
                 .AddTag("bits", "M0[0..16]:BOOL", bits.Cast<object>().ToArray())
                 .AddTag("next", "M32[0..0]:BOOL", true).Build();
 
-            await request.ExecuteAsync();
+            var response = Assert.IsType<DefaultPlcWriteResponse>(await request.ExecuteAsync());
 
-            Assert.Equal(Convert.FromHexString(
-                "500000FFFF03001A001000061400000002" +
-                "000000900200010101002000009001000100"), transport.GetAllWrittenData());
+            Assert.All(response.TagNames, name => Assert.Equal(PlcResponseCode.Ok, response.GetResponseCode(name)));
+            var written = await frames;
+            Assert.Equal(new[] { 0x1401, 0x1401 },
+                new[] { CommandAt(written, 0), CommandAt(written, 30) });
+            Assert.Equal(1, written[13] | written[14] << 8);
+            Assert.Equal(17, written[19] | written[20] << 8);
+            Assert.Equal(1, written[30 + 19] | written[30 + 20] << 8);
         }
 
         [Fact]
